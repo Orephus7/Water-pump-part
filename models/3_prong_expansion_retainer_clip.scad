@@ -231,6 +231,7 @@ module prong() {
 module stem() {
     nub_radius = center_nub_d / 2;
     nub_cylinder_height = center_nub_length - nub_radius;
+    assert(prong_count > 0, "prong_count must be positive");
     assert(nub_cylinder_height > 0, "center_nub_length must exceed center_nub_d / 2");
     union() {
         for (i = [0 : prong_count - 1]) {
