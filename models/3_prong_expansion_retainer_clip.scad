@@ -241,22 +241,23 @@ module prong() {
 module stem() {
     nub_radius = center_nub_d / 2;
     nub_cylinder_height = max(center_nub_length - nub_radius, 0);
+    nub_base_z = -center_nub_length + boolean_epsilon;
     union() {
         for (i = [0 : prong_count - 1]) {
             rotate([0, 0, i * 360 / prong_count])
                 prong();
         }
 
-        translate([0, 0, -center_nub_length])
+        translate([0, 0, nub_base_z])
             if (nub_cylinder_height > 0) {
                 union() {
-                    cylinder(h = nub_cylinder_height + boolean_epsilon, d = center_nub_d);
-                    translate([0, 0, nub_cylinder_height + boolean_epsilon])
+                    cylinder(h = nub_cylinder_height, d = center_nub_d);
+                    translate([0, 0, nub_cylinder_height])
                         sphere(d = center_nub_d);
                 }
             } else {
-                translate([0, 0, center_nub_length / 2 + boolean_epsilon / 2])
-                    scale([1, 1, max((center_nub_length + boolean_epsilon) / center_nub_d, boolean_epsilon)])
+                translate([0, 0, center_nub_length / 2])
+                    scale([1, 1, max(center_nub_length / center_nub_d, boolean_epsilon)])
                         sphere(d = center_nub_d);
             }
     }
