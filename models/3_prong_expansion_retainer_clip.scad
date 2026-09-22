@@ -29,6 +29,7 @@ center_nub_length = 1.8;
 
 boss_d = 2.0;
 boss_height = 2.4;
+boss_tip_d = 1.4;
 boss_recess_d = 2.0;
 boss_recess_depth = 0.7;
 rib_thickness = 0.9;
@@ -113,13 +114,16 @@ module interior_ribs() {
 
 module inner_boss() {
     boss_tip_z = flange_height + head_height - head_wall - boss_height;
-    boss_center_z = boss_tip_z + boss_d / 2;
+    boss_tip_center_z = boss_tip_z + boss_tip_d / 2;
+    boss_top_center_z = boss_tip_z + boss_height - boss_d / 2 + 0.25;
 
     difference() {
         union() {
-            translate([0, 0, boss_center_z])
-                cylinder(h = boss_height - boss_d / 2 + 0.25, d = boss_d);
-            translate([0, 0, boss_center_z])
+            translate([0, 0, boss_tip_center_z])
+                sphere(d = boss_tip_d);
+            translate([0, 0, boss_tip_center_z])
+                cylinder(h = boss_top_center_z - boss_tip_center_z, d = boss_d);
+            translate([0, 0, boss_top_center_z])
                 sphere(d = boss_d);
         }
         translate([0, 0, boss_tip_z - 0.02])
