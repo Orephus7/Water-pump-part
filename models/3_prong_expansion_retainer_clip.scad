@@ -229,7 +229,8 @@ module prong() {
                         rounded_polygon_2d([
                             [0, 0],
                             [gusset_depth, 0],
-                            [gusset_depth, -gusset_height]
+                            [gusset_depth, -gusset_height],
+                            [0, -gusset_height * 0.45]
                         ], gusset_corner_round);
         }
 
