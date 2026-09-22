@@ -81,9 +81,13 @@ module rounded_prism(size, radius) {
 }
 
 module rounded_polygon_2d(points, radius) {
-    offset(r = radius)
-        offset(delta = -radius)
-            polygon(points = points);
+    if (radius <= 0) {
+        polygon(points = points);
+    } else {
+        offset(r = radius)
+            offset(delta = -radius)
+                polygon(points = points);
+    }
 }
 
 module flange() {
@@ -114,9 +118,9 @@ module head_outer() {
 }
 
 module head_cavity() {
-    inner_bottom_r = head_outer_d / 2 - head_wall;
-    inner_top_r = inner_bottom_r - head_draft_per_side * head_inner_draft_factor;
-    cavity_height = head_height - head_wall - head_floor_clearance;
+    inner_bottom_r = max(head_outer_d / 2 - head_wall, boolean_epsilon);
+    inner_top_r = max(inner_bottom_r - head_draft_per_side * head_inner_draft_factor, boolean_epsilon);
+    cavity_height = max(head_height - head_wall - head_floor_clearance, boolean_epsilon);
 
     translate([0, 0, flange_height - boolean_epsilon / 2])
         union() {
