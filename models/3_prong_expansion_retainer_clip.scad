@@ -255,8 +255,8 @@ module stem() {
                         sphere(d = center_nub_d);
                 }
             } else {
-                translate([0, 0, center_nub_length / 2])
-                    scale([1, 1, max(center_nub_length / center_nub_d, boolean_epsilon)])
+                translate([0, 0, center_nub_length / 2 + boolean_epsilon / 2])
+                    scale([1, 1, max((center_nub_length + boolean_epsilon) / center_nub_d, boolean_epsilon)])
                         sphere(d = center_nub_d);
             }
     }
