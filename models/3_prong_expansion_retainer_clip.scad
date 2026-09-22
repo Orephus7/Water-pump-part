@@ -121,6 +121,7 @@ module head_cavity() {
     inner_bottom_r = max(head_outer_d / 2 - head_wall, boolean_epsilon);
     inner_top_r = max(inner_bottom_r - head_draft_per_side * head_inner_draft_factor, boolean_epsilon);
     cavity_height = max(head_height - head_wall - head_floor_clearance, boolean_epsilon);
+    cap_base_z = max(cavity_height - head_cavity_cap_offset, 0);
 
     translate([0, 0, flange_height - boolean_epsilon / 2])
         union() {
@@ -129,7 +130,7 @@ module head_cavity() {
                 r1 = inner_bottom_r,
                 r2 = inner_top_r
             );
-            translate([0, 0, cavity_height - head_cavity_cap_offset])
+            translate([0, 0, cap_base_z])
                 intersection() {
                     sphere(r = inner_top_r + head_cavity_cap_sphere_pad);
                     cylinder(h = head_cavity_cap_cylinder_h, r = inner_top_r + head_cavity_cap_cylinder_pad);
@@ -141,6 +142,7 @@ module head_slots() {
     slot_height = head_height - slot_bottom_offset - slot_top_offset;
     bottom_slot_depth = head_wall + slot_radial_depth;
     top_slot_depth = bottom_slot_depth - 0.22;
+    slot_top_z = flange_height + slot_bottom_offset + slot_height - boolean_epsilon;
     slot_round = max(0, min(
         slot_corner_round,
         slot_width / 2 - boolean_epsilon,
@@ -153,7 +155,7 @@ module head_slots() {
             hull() {
                 translate([head_outer_d / 2 - head_wall - slot_radial_inset, 0, flange_height + slot_bottom_offset])
                     rounded_prism([bottom_slot_depth, slot_width, boolean_epsilon], slot_round);
-                translate([head_outer_d / 2 - head_wall - slot_radial_inset + 0.18, 0, flange_height + head_height - slot_top_offset - boolean_epsilon])
+                translate([head_outer_d / 2 - head_wall - slot_radial_inset + 0.18, 0, slot_top_z])
                     rounded_prism([top_slot_depth, slot_top_width, boolean_epsilon], slot_round);
             }
     }
@@ -237,7 +239,7 @@ module prong() {
 }
 
 module stem() {
-    nub_cylinder_height = max(center_nub_length - center_nub_d / 4, boolean_epsilon);
+    nub_cylinder_height = max(center_nub_length - center_nub_d / 4, 0);
     union() {
         for (i = [0 : prong_count - 1]) {
             rotate([0, 0, i * 360 / prong_count])
@@ -245,9 +247,14 @@ module stem() {
         }
 
         translate([0, 0, -center_nub_length])
-            union() {
-                cylinder(h = nub_cylinder_height, d = center_nub_d);
-                translate([0, 0, nub_cylinder_height])
+            if (nub_cylinder_height > 0) {
+                union() {
+                    cylinder(h = nub_cylinder_height, d = center_nub_d);
+                    translate([0, 0, nub_cylinder_height])
+                        sphere(d = center_nub_d);
+                }
+            } else {
+                translate([0, 0, center_nub_d / 2])
                     sphere(d = center_nub_d);
             }
     }
