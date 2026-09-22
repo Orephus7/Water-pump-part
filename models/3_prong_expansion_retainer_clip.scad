@@ -58,14 +58,18 @@ relief_start_overlap = 0.05;
 boolean_epsilon = 0.02;
 
 module rounded_rect_2d(size, radius) {
-    hull() {
-        for (x = [-1, 1]) {
-            for (y = [-1, 1]) {
-                translate([
-                    x * (size[0] / 2 - radius),
-                    y * (size[1] / 2 - radius)
-                ])
-                    circle(r = radius);
+    if (radius <= 0) {
+        square(size, center = true);
+    } else {
+        hull() {
+            for (x = [-1, 1]) {
+                for (y = [-1, 1]) {
+                    translate([
+                        x * (size[0] / 2 - radius),
+                        y * (size[1] / 2 - radius)
+                    ])
+                        circle(r = radius);
+                }
             }
         }
     }
@@ -133,13 +137,13 @@ module head_slots() {
     slot_height = head_height - slot_bottom_offset - slot_top_offset;
     bottom_slot_depth = head_wall + slot_radial_depth;
     top_slot_depth = bottom_slot_depth - 0.22;
-    slot_round = min(
+    slot_round = max(0, min(
         slot_corner_round,
         slot_width / 2 - boolean_epsilon,
         slot_top_width / 2 - boolean_epsilon,
         bottom_slot_depth / 2 - boolean_epsilon,
         top_slot_depth / 2 - boolean_epsilon
-    );
+    ));
     for (i = [0 : slot_count - 1]) {
         rotate([0, 0, i * 360 / slot_count])
             hull() {
