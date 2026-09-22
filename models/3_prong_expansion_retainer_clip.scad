@@ -134,7 +134,8 @@ module head_cavity() {
             );
             translate([0, 0, cap_base_z])
                 intersection() {
-                    sphere(r = inner_top_r + head_cavity_cap_sphere_pad);
+                    translate([0, 0, inner_top_r + head_cavity_cap_sphere_pad])
+                        sphere(r = inner_top_r + head_cavity_cap_sphere_pad);
                     cylinder(h = head_cavity_cap_cylinder_h, r = inner_top_r + head_cavity_cap_cylinder_pad);
                 }
         }
