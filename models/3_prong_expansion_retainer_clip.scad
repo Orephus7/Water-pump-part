@@ -1,37 +1,42 @@
 $fn = 96;
 
 head_outer_d = 13.5;
-head_height = 9.0;
+head_height = 8.4;
 head_wall = 1.7;
-head_draft_per_side = 0.22;
-head_top_round = 0.8;
-slot_count = 6;
-slot_width = 1.6;
-slot_top_width = 1.25;
-slot_bottom_offset = 1.2;
-slot_top_offset = 0.5;
-slot_radial_inset = 0.3;
-slot_radial_depth = 1.6;
-slot_corner_round = 0.28;
+head_draft_per_side = 0.18;
+head_top_round = 0.65;
+head_skirt_bulge = 0.55;
+head_neck_inset = 0.7;
+head_cap_inset = 1.15;
+slot_count = 8;
+slot_width = 1.2;
+slot_top_width = 0.95;
+slot_bottom_offset = 0.8;
+slot_top_offset = 0.7;
+slot_radial_inset = 0.15;
+slot_radial_depth = 1.95;
+slot_corner_round = 0.22;
 
 flange_outer_d = 18.5;
-flange_height = 3.5;
-flange_edge_radius = 0.5;
+flange_height = 3.1;
+flange_edge_radius = 0.45;
 
 prong_count = 3;
-prong_width = 2.8;
-prong_thickness = 2.0;
-prong_length = 16.5;
-prong_center_radius = 3.2;
-hook_extension = 2.5;
-hook_height = 2.2;
-hook_tip_width_scale = 0.92;
-hook_tip_height_scale = 0.78;
-hook_tip_shift = 0.15;
+prong_width = 2.55;
+prong_thickness = 1.9;
+prong_length = 17.2;
+prong_center_radius = 3.0;
+hook_extension = 3.0;
+hook_height = 2.7;
+hook_tip_width_scale = 0.82;
+hook_tip_height_scale = 0.62;
+hook_tip_shift = 0.18;
+hook_tip_thickness_scale = 0.86;
+hook_tip_outset = 0.9;
 edge_round = 0.35;
-gusset_height = 3.8;
-gusset_depth = 3.8;
-gusset_corner_round = 0.35;
+gusset_height = 4.6;
+gusset_depth = 4.2;
+gusset_corner_round = 0.45;
 center_nub_d = 2.2;
 center_nub_length = 1.8;
 
@@ -103,20 +108,21 @@ module flange() {
 }
 
 module head_outer() {
-    head_straight_height = max(head_height - head_top_round, boolean_epsilon);
-    union() {
-        translate([0, 0, flange_height])
-            cylinder(
-                h = head_straight_height,
-                r1 = head_outer_d / 2 + head_draft_per_side,
-                r2 = head_outer_d / 2
-            );
-        translate([0, 0, flange_height + head_height - head_top_round])
-            intersection() {
-                sphere(r = head_outer_d / 2);
-                cylinder(h = head_top_round * 2, r = head_outer_d / 2 + 0.2);
-            }
-    }
+    lower_r = head_outer_d / 2 + head_skirt_bulge;
+    neck_r = head_outer_d / 2 - head_neck_inset;
+    cap_r = head_outer_d / 2 - head_cap_inset;
+    top_z = flange_height + head_height;
+
+    rotate_extrude(convexity = 10)
+        polygon(points = [
+            [0, flange_height],
+            [lower_r, flange_height],
+            [head_outer_d / 2 + head_draft_per_side, flange_height + 0.9],
+            [head_outer_d / 2 + 0.15, flange_height + 2.6],
+            [neck_r, top_z - 1.15],
+            [cap_r, top_z - 0.35],
+            [0, top_z]
+        ]);
 }
 
 module head_cavity() {
@@ -218,14 +224,20 @@ module prong() {
     relief_diameter = max(prong_center_radius * 2 - prong_thickness, boolean_epsilon);
     difference() {
         union() {
-            translate([prong_center_radius, 0, -prong_length])
-                rounded_prism([prong_thickness, prong_width, prong_length + prong_shaft_overlap], edge_round);
+            hull() {
+                translate([prong_center_radius, 0, -prong_length])
+                    rounded_prism([prong_thickness, prong_width, prong_length * 0.62], edge_round);
+                translate([prong_center_radius + 0.28, 0, -prong_length * 0.46])
+                    rounded_prism([prong_thickness * 0.96, prong_width * 0.94, prong_length * 0.46], edge_round);
+            }
 
             hull() {
-                translate([prong_center_radius + hook_extension * 0.22, 0, -prong_length])
-                    rounded_prism([prong_thickness + hook_extension * 0.56, prong_width, hook_height], edge_round);
-                translate([prong_center_radius + hook_extension / 2, 0, -prong_length + hook_height * hook_tip_shift])
-                    rounded_prism([prong_thickness, prong_width * hook_tip_width_scale, hook_tip_height], edge_round);
+                translate([prong_center_radius + hook_extension * 0.2, 0, -prong_length + hook_height * 0.15])
+                    rounded_prism([prong_thickness + hook_extension * 0.4, prong_width * 0.96, hook_height], edge_round);
+                translate([prong_center_radius + hook_extension * 0.62, 0, -prong_length + hook_height * hook_tip_shift])
+                    rounded_prism([prong_thickness * hook_tip_thickness_scale, prong_width * hook_tip_width_scale, hook_tip_height], edge_round);
+                translate([prong_center_radius + hook_extension * hook_tip_outset, 0, -prong_length + hook_height * 0.92])
+                    rounded_prism([prong_thickness * 0.72, prong_width * 0.72, hook_height * 0.28], edge_round);
             }
 
             translate([prong_center_radius - prong_thickness / 2, 0, 0])
@@ -235,7 +247,8 @@ module prong() {
                             [0, 0],
                             [gusset_depth, 0],
                             [gusset_depth, -gusset_height],
-                            [0, -gusset_height * 0.45]
+                            [0.7, -gusset_height * 0.78],
+                            [0, -gusset_height * 0.34]
                         ], gusset_corner_round);
         }
 
