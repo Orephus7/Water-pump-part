@@ -139,9 +139,9 @@ module head_cavity() {
 }
 
 module head_slots() {
-    slot_height = head_height - slot_bottom_offset - slot_top_offset;
+    slot_height = max(head_height - slot_bottom_offset - slot_top_offset, boolean_epsilon);
     bottom_slot_depth = head_wall + slot_radial_depth;
-    top_slot_depth = bottom_slot_depth - 0.22;
+    top_slot_depth = max(bottom_slot_depth - 0.22, boolean_epsilon);
     slot_top_z = flange_height + slot_bottom_offset + slot_height - boolean_epsilon;
     slot_round = max(0, min(
         slot_corner_round,
@@ -164,8 +164,8 @@ module head_slots() {
 module interior_ribs() {
     inner_bottom_r = head_outer_d / 2 - head_wall;
     rib_start = boss_d / 2 - rib_root_overlap;
-    rib_length = inner_bottom_r - rib_start + rib_shell_overlap;
-    rib_height = head_height - head_wall - rib_top_clearance;
+    rib_length = max(inner_bottom_r - rib_start + rib_shell_overlap, boolean_epsilon);
+    rib_height = max(head_height - head_wall - rib_top_clearance, boolean_epsilon);
 
     for (i = [0 : slot_count - 1]) {
         rotate([0, 0, i * 360 / slot_count])
@@ -240,6 +240,7 @@ module prong() {
 
 module stem() {
     nub_cylinder_height = max(center_nub_length - center_nub_d / 4, 0);
+    nub_sphere_center_z = max(nub_cylinder_height, center_nub_d / 2);
     union() {
         for (i = [0 : prong_count - 1]) {
             rotate([0, 0, i * 360 / prong_count])
@@ -250,11 +251,11 @@ module stem() {
             if (nub_cylinder_height > 0) {
                 union() {
                     cylinder(h = nub_cylinder_height, d = center_nub_d);
-                    translate([0, 0, nub_cylinder_height])
+                    translate([0, 0, nub_sphere_center_z])
                         sphere(d = center_nub_d);
                 }
             } else {
-                translate([0, 0, center_nub_d / 2])
+                translate([0, 0, nub_sphere_center_z])
                     sphere(d = center_nub_d);
             }
     }
