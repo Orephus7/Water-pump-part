@@ -243,6 +243,13 @@ module prong() {
             }
 
             hull() {
+                translate([prong_center_radius + prong_tip_outset * 0.78, 0, -prong_length + hook_height * 0.22])
+                    rounded_prism([prong_thickness * 0.94, prong_width * 0.88, hook_height * 0.42], edge_round);
+                translate([prong_center_radius + hook_extension * 0.16, 0, -prong_length + hook_height * 0.08])
+                    rounded_prism([prong_thickness + hook_extension * 0.34, prong_width * 0.94, hook_height * 0.34], edge_round);
+            }
+
+            hull() {
                 translate([prong_center_radius + hook_extension * 0.16, 0, -prong_length + hook_height * 0.08])
                     rounded_prism([prong_thickness + hook_extension * 0.34, prong_width * 0.94, hook_height * 0.86], edge_round);
                 translate([prong_center_radius + hook_extension * 0.56, 0, -prong_length + hook_height * hook_tip_shift - hook_tip_drop])
