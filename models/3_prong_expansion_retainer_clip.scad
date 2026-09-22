@@ -197,13 +197,7 @@ module body_shell() {
             flange();
             head_outer();
         }
-        difference() {
-            head_cavity();
-            union() {
-                interior_ribs();
-                inner_boss();
-            }
-        }
+        head_cavity();
         head_slots();
     }
 }
@@ -260,5 +254,7 @@ module stem() {
 
 union() {
     body_shell();
+    interior_ribs();
+    inner_boss();
     stem();
 }
