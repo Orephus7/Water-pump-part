@@ -201,7 +201,8 @@ module body_shell() {
 }
 
 module prong() {
-    relief_diameter = max(prong_center_radius * 2 - prong_thickness, boolean_epsilon);
+    relief_center_x = prong_center_radius + hook_extension / 2;
+    relief_diameter = max(prong_center_radius * 2 - prong_thickness + hook_extension, boolean_epsilon);
     difference() {
         union() {
             translate([prong_center_radius, 0, -prong_length])
@@ -221,7 +222,7 @@ module prong() {
                         ], edge_round);
         }
 
-        translate([prong_center_radius, 0, -prong_length + hook_height - relief_start_overlap])
+        translate([relief_center_x, 0, -prong_length + hook_height - relief_start_overlap])
             cylinder(h = prong_length - hook_height + prong_shaft_overlap + relief_start_overlap, d = relief_diameter);
     }
 }
