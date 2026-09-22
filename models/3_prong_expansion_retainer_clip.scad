@@ -261,11 +261,9 @@ module stem() {
                         sphere(d = center_nub_d);
                 }
             } else {
-                intersection() {
-                    translate([0, 0, center_nub_d / 2])
+                translate([0, 0, center_nub_length / 2])
+                    resize([center_nub_d, center_nub_d, max(center_nub_length, boolean_epsilon)])
                         sphere(d = center_nub_d);
-                    cylinder(h = max(center_nub_length, boolean_epsilon), d = center_nub_d);
-                }
             }
     }
 }
