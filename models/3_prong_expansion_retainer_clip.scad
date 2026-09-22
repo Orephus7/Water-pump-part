@@ -58,17 +58,18 @@ relief_start_overlap = 0.05;
 boolean_epsilon = 0.02;
 
 module rounded_rect_2d(size, radius) {
-    if (radius <= 0) {
+    safe_radius = min(max(radius, 0), min(size[0], size[1]) / 2);
+    if (safe_radius <= 0) {
         square(size, center = true);
     } else {
         hull() {
             for (x = [-1, 1]) {
                 for (y = [-1, 1]) {
                     translate([
-                        x * (size[0] / 2 - radius),
-                        y * (size[1] / 2 - radius)
+                        x * (size[0] / 2 - safe_radius),
+                        y * (size[1] / 2 - safe_radius)
                     ])
-                        circle(r = radius);
+                        circle(r = safe_radius);
                 }
             }
         }
@@ -102,10 +103,11 @@ module flange() {
 }
 
 module head_outer() {
+    head_straight_height = max(head_height - head_top_round, boolean_epsilon);
     union() {
         translate([0, 0, flange_height])
             cylinder(
-                h = head_height - head_top_round,
+                h = head_straight_height,
                 r1 = head_outer_d / 2 + head_draft_per_side,
                 r2 = head_outer_d / 2
             );
@@ -211,6 +213,7 @@ module body_shell() {
 }
 
 module prong() {
+    hook_tip_height = max(hook_height * hook_tip_height_scale, boolean_epsilon);
     difference() {
         union() {
             translate([prong_center_radius, 0, -prong_length])
@@ -220,7 +223,7 @@ module prong() {
                 translate([prong_center_radius + hook_extension * 0.22, 0, -prong_length])
                     rounded_prism([prong_thickness + hook_extension * 0.56, prong_width, hook_height], edge_round);
                 translate([prong_center_radius + hook_extension / 2, 0, -prong_length + hook_height * hook_tip_shift])
-                    rounded_prism([prong_thickness, prong_width * hook_tip_width_scale, hook_height * hook_tip_height_scale], edge_round);
+                    rounded_prism([prong_thickness, prong_width * hook_tip_width_scale, hook_tip_height], edge_round);
             }
 
             translate([prong_center_radius - prong_thickness / 2, 0, 0])
