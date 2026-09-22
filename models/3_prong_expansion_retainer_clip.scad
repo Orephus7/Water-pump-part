@@ -223,7 +223,7 @@ module prong() {
                         ], edge_round);
         }
 
-        translate([0, 0, -prong_length + hook_height - relief_start_overlap])
+        translate([prong_center_radius, 0, -prong_length + hook_height - relief_start_overlap])
             cylinder(h = prong_length - hook_height + prong_shaft_overlap + relief_start_overlap, d = relief_diameter);
     }
 }
