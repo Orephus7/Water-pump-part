@@ -231,6 +231,8 @@ module body_shell() {
 module prong() {
     hook_tip_height = max(hook_height * hook_tip_height_scale, boolean_epsilon);
     relief_diameter = max(prong_center_radius * 2 - prong_thickness, boolean_epsilon);
+    relief_height = max(prong_length * 0.44, boolean_epsilon);
+    relief_z = -prong_length + hook_height * 0.22;
     difference() {
         union() {
             hull() {
@@ -271,8 +273,8 @@ module prong() {
                         ], gusset_corner_round);
         }
 
-        translate([prong_center_radius + prong_mid_outset * 0.35, 0, -prong_length + hook_height - relief_start_overlap])
-            cylinder(h = prong_length - hook_height + relief_start_overlap, d = relief_diameter);
+        translate([prong_center_radius - prong_thickness * 0.18, 0, relief_z])
+            cylinder(h = relief_height, d = relief_diameter * 0.92);
     }
 }
 
