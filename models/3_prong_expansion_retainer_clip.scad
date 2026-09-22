@@ -30,7 +30,7 @@ center_nub_length = 1.8;
 boss_d = 2.0;
 boss_height = 2.4;
 boss_tip_d = 1.4;
-boss_recess_d = 2.0;
+boss_recess_d = 1.0;
 boss_recess_depth = 0.7;
 rib_thickness = 0.9;
 
