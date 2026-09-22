@@ -215,6 +215,7 @@ module body_shell() {
 
 module prong() {
     hook_tip_height = max(hook_height * hook_tip_height_scale, boolean_epsilon);
+    relief_diameter = max(prong_center_radius * 2 - prong_thickness, boolean_epsilon);
     difference() {
         union() {
             translate([prong_center_radius, 0, -prong_length])
@@ -239,7 +240,7 @@ module prong() {
         }
 
         translate([0, 0, -prong_length + hook_height - relief_start_overlap])
-            cylinder(h = prong_length - hook_height + prong_shaft_overlap + relief_start_overlap, d = prong_center_radius * 2 - prong_thickness);
+            cylinder(h = prong_length - hook_height + prong_shaft_overlap + relief_start_overlap, d = relief_diameter);
     }
 }
 
