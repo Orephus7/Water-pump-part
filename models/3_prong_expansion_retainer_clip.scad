@@ -260,9 +260,11 @@ module stem() {
                         sphere(d = center_nub_d);
                 }
             } else {
-                translate([0, 0, center_nub_length / 2])
-                    scale([1, 1, max(center_nub_length / center_nub_d, boolean_epsilon)])
+                intersection() {
+                    translate([0, 0, center_nub_d / 2])
                         sphere(d = center_nub_d);
+                    cylinder(h = max(center_nub_length, boolean_epsilon), d = center_nub_d);
+                }
             }
     }
 }
