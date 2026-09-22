@@ -143,7 +143,6 @@ module head_slots() {
     slot_round = max(0, min(
         slot_corner_round,
         slot_width / 2 - boolean_epsilon,
-        slot_width / 2 - boolean_epsilon,
         bottom_slot_depth / 2 - boolean_epsilon,
         top_slot_depth / 2 - boolean_epsilon
     ));
