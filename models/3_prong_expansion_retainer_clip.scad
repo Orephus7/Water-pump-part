@@ -35,8 +35,17 @@ boss_recess_depth = 0.7;
 rib_thickness = 0.9;
 
 module rounded_rect_2d(size, radius) {
-    offset(r = radius)
-        square([size[0] - 2 * radius, size[1] - 2 * radius], center = true);
+    hull() {
+        for (x = [-1, 1]) {
+            for (y = [-1, 1]) {
+                translate([
+                    x * (size[0] / 2 - radius),
+                    y * (size[1] / 2 - radius)
+                ])
+                    circle(r = radius);
+            }
+        }
+    }
 }
 
 module rounded_prism(size, radius) {
