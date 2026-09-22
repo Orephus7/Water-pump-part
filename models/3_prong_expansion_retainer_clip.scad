@@ -229,7 +229,7 @@ module prong() {
 module stem() {
     nub_radius = center_nub_d / 2;
     nub_cylinder_height = max(center_nub_length - nub_radius, 0);
-    assert(center_nub_length >= nub_radius, "center_nub_length must be at least center_nub_d / 2");
+    assert(center_nub_length >= nub_radius, str("center_nub_length (", center_nub_length, ") must be at least ", nub_radius));
     union() {
         for (i = [0 : 2]) {
             rotate([0, 0, i * 120])
