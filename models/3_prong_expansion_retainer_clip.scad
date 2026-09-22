@@ -16,7 +16,6 @@ flange_outer_d = 18.5;
 flange_height = 3.5;
 flange_edge_radius = 0.5;
 
-prong_count = 3;
 prong_width = 2.8;
 prong_thickness = 2.0;
 prong_length = 16.5;
@@ -231,11 +230,10 @@ module prong() {
 module stem() {
     nub_radius = center_nub_d / 2;
     nub_cylinder_height = max(center_nub_length - nub_radius, 0);
-    assert(prong_count == 3, "prong_count must be 3 for this clip");
     assert(center_nub_length >= nub_radius, "center_nub_length must be at least center_nub_d / 2");
     union() {
-        for (i = [0 : prong_count - 1]) {
-            rotate([0, 0, i * 360 / prong_count])
+        for (i = [0 : 2]) {
+            rotate([0, 0, i * 120])
                 prong();
         }
 
