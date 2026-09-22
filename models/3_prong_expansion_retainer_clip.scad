@@ -29,11 +29,9 @@ center_nub_length = 1.8;
 
 boss_d = 2.0;
 boss_height = 2.4;
-boss_tip_d = 1.4;
 boss_recess_d = 2.0;
 boss_recess_depth = 0.7;
 rib_thickness = 0.9;
-rib_clearance = 0.6;
 
 module rounded_rect_2d(size, radius) {
     offset(r = radius)
