@@ -7,10 +7,12 @@ head_draft_per_side = 0.22;
 head_top_round = 0.8;
 slot_count = 6;
 slot_width = 1.6;
+slot_top_width = 1.25;
 slot_bottom_offset = 1.2;
 slot_top_offset = 0.5;
 slot_radial_inset = 0.3;
 slot_radial_depth = 1.6;
+slot_corner_round = 0.28;
 
 flange_outer_d = 18.5;
 flange_height = 3.5;
@@ -23,9 +25,13 @@ prong_length = 16.5;
 prong_center_radius = 3.2;
 hook_extension = 2.5;
 hook_height = 2.2;
+hook_tip_width_scale = 0.92;
+hook_tip_height_scale = 0.78;
+hook_tip_shift = 0.15;
 edge_round = 0.35;
 gusset_height = 3.8;
 gusset_depth = 3.8;
+gusset_corner_round = 0.35;
 center_nub_d = 2.2;
 center_nub_length = 1.8;
 
@@ -68,6 +74,12 @@ module rounded_rect_2d(size, radius) {
 module rounded_prism(size, radius) {
     linear_extrude(height = size[2])
         rounded_rect_2d([size[0], size[1]], radius);
+}
+
+module rounded_polygon_2d(points, radius) {
+    offset(r = radius)
+        offset(delta = -radius)
+            polygon(points = points);
 }
 
 module flange() {
@@ -120,8 +132,12 @@ module head_slots() {
     slot_height = head_height - slot_bottom_offset - slot_top_offset;
     for (i = [0 : slot_count - 1]) {
         rotate([0, 0, i * 360 / slot_count])
-            translate([head_outer_d / 2 - head_wall - slot_radial_inset, -slot_width / 2, flange_height + slot_bottom_offset])
-                cube([head_wall + slot_radial_depth, slot_width, slot_height]);
+            hull() {
+                translate([head_outer_d / 2 - head_wall - slot_radial_inset, 0, flange_height + slot_bottom_offset])
+                    rounded_prism([head_wall + slot_radial_depth, slot_width, boolean_epsilon], slot_corner_round);
+                translate([head_outer_d / 2 - head_wall - slot_radial_inset + 0.18, 0, flange_height + head_height - slot_top_offset - boolean_epsilon])
+                    rounded_prism([head_wall + slot_radial_depth - 0.22, slot_top_width, boolean_epsilon], slot_corner_round);
+            }
     }
 }
 
@@ -180,17 +196,21 @@ module prong() {
             translate([prong_center_radius, 0, -prong_length])
                 rounded_prism([prong_thickness, prong_width, prong_length + prong_shaft_overlap], edge_round);
 
-            translate([prong_center_radius, 0, -prong_length])
-                rounded_prism([prong_thickness + hook_extension, prong_width, hook_height], edge_round);
+            hull() {
+                translate([prong_center_radius + hook_extension * 0.22, 0, -prong_length])
+                    rounded_prism([prong_thickness + hook_extension * 0.56, prong_width, hook_height], edge_round);
+                translate([prong_center_radius + hook_extension / 2, 0, -prong_length + hook_height * hook_tip_shift])
+                    rounded_prism([prong_thickness, prong_width * hook_tip_width_scale, hook_height * hook_tip_height_scale], edge_round);
+            }
 
             translate([prong_center_radius - prong_thickness / 2, 0, 0])
                 rotate([90, 0, 0])
                     linear_extrude(height = prong_width, center = true)
-                        polygon(points = [
+                        rounded_polygon_2d([
                             [0, 0],
                             [gusset_depth, 0],
                             [gusset_depth, -gusset_height]
-                        ]);
+                        ], gusset_corner_round);
         }
 
         translate([0, 0, -prong_length + hook_height - relief_start_overlap])
