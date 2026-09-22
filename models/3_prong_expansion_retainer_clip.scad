@@ -239,8 +239,8 @@ module prong() {
 }
 
 module stem() {
-    nub_cylinder_height = max(center_nub_length - center_nub_d / 4, 0);
-    nub_sphere_center_z = max(nub_cylinder_height, center_nub_d / 2);
+    nub_radius = center_nub_d / 2;
+    nub_cylinder_height = max(center_nub_length - nub_radius, 0);
     union() {
         for (i = [0 : prong_count - 1]) {
             rotate([0, 0, i * 360 / prong_count])
@@ -250,13 +250,14 @@ module stem() {
         translate([0, 0, -center_nub_length])
             if (nub_cylinder_height > 0) {
                 union() {
-                    cylinder(h = nub_cylinder_height, d = center_nub_d);
-                    translate([0, 0, nub_sphere_center_z])
+                    cylinder(h = nub_cylinder_height + boolean_epsilon, d = center_nub_d);
+                    translate([0, 0, nub_cylinder_height + boolean_epsilon])
                         sphere(d = center_nub_d);
                 }
             } else {
-                translate([0, 0, nub_sphere_center_z])
-                    sphere(d = center_nub_d);
+                translate([0, 0, center_nub_length / 2])
+                    scale([1, 1, max(center_nub_length / center_nub_d, boolean_epsilon)])
+                        sphere(d = center_nub_d);
             }
     }
 }
