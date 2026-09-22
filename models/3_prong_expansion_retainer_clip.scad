@@ -167,8 +167,8 @@ module prong() {
                         ]);
         }
 
-        translate([0, 0, -prong_length - 0.01])
-            cylinder(h = hook_height + 0.02, d = prong_center_radius * 2 - prong_thickness);
+        translate([0, 0, -prong_length + hook_height - 0.05])
+            cylinder(h = prong_length - hook_height + 0.35, d = prong_center_radius * 2 - prong_thickness);
     }
 }
 
