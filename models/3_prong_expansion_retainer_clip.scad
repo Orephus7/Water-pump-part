@@ -230,9 +230,9 @@ module prong() {
 
 module stem() {
     nub_radius = center_nub_d / 2;
-    nub_cylinder_height = center_nub_length - nub_radius;
+    nub_cylinder_height = max(center_nub_length - nub_radius, 0);
     assert(prong_count > 0, "prong_count must be positive");
-    assert(nub_cylinder_height > 0, "center_nub_length must exceed center_nub_d / 2");
+    assert(center_nub_length >= nub_radius, "center_nub_length must be at least center_nub_d / 2");
     union() {
         for (i = [0 : prong_count - 1]) {
             rotate([0, 0, i * 360 / prong_count])
@@ -240,10 +240,18 @@ module stem() {
         }
 
         translate([0, 0, -center_nub_length + boolean_epsilon])
-            union() {
-                cylinder(h = nub_cylinder_height, d = center_nub_d);
-                translate([0, 0, nub_cylinder_height])
-                    sphere(d = center_nub_d);
+            if (nub_cylinder_height > 0) {
+                union() {
+                    cylinder(h = nub_cylinder_height, d = center_nub_d);
+                    translate([0, 0, nub_cylinder_height])
+                        sphere(d = center_nub_d);
+                }
+            } else {
+                intersection() {
+                    translate([0, 0, nub_radius])
+                        sphere(d = center_nub_d);
+                    cylinder(h = nub_radius, d = center_nub_d);
+                }
             }
     }
 }
